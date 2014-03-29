@@ -11,6 +11,9 @@ void stock_info_deinit(void);
 Window* stock_info_get_window(void);
 
 /*Sets the symbol for the stock page*/
-void stock_info_set_symbol(char* symbol);
+void stock_info_set_symbol_index(int index);
+
+/*Updates the information for the current stock symbol*/
+void stock_info_update();
 
 #endif //STOCK_INFO_H
