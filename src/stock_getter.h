@@ -19,6 +19,6 @@ bool get_stock_info(char* symbol, stock_t* info);
   Returns false if there is an error with the request.
   If this function returns true, the stock infos may
   still be invalid (for example, if a stock symbol is invalid)*/
-bool get_stock_info_multi(char** symbols, stock_t** infos, int num);
+bool get_stock_info_multi(char* symbols, stock_t* infos, int num);
 
 #endif //STOCK_GETTER_H

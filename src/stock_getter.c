@@ -26,7 +26,7 @@ bool get_stock_info(char* symbol, stock_t* info)
 
    return true;
 }
-bool get_stock_info_multi(char** symbols, stock_t** infos, int num)
+bool get_stock_info_multi(char* symbols, stock_t* infos, int num)
 {
    if (!infos || !symbols)
       return false;
@@ -34,6 +34,15 @@ bool get_stock_info_multi(char** symbols, stock_t** infos, int num)
       return true;
 
    //TODO: Implement
+   int i;
+   for(i=0;i<num;i++)
+   {
+      infos[i]open = 60;
+      infos[i]close = 80;
+      infos[i]high = 90;
+      infos[i]low = 50;
+      infoes[i].valid = true;
+   }
 
-   return false;
+   return true;
 }

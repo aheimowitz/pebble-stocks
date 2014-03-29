@@ -8,13 +8,15 @@
 
 //#define GRAPH_SIZE 20
 
+static char* text_info_default =  "OP: -\nHI: -\nLO: -\nCL: -";
+
 static Window *window;
 static TextLayer* text_symbol;
 static TextLayer* text_value_diff;
 static TextLayer* text_value_info;
 static char str_symbol[20];
 static char str_value_diff[20];
-static char str_value_info[40];
+static char str_value_info[80];
 static int current_index;
 
 static TextLayer* background_workaround;
@@ -69,8 +71,20 @@ static void update_text()
 
    snprintf(str_value_diff, sizeof(str_value_diff),
             "%s (%s%%)", str_percent, str_difference);
-   //         "%+d.%02d (%+d.%02d%%)", int_pc, frc_pc, int_ab, frc_ab);
+   char str_op[10];
+   char str_hi[10];
+   char str_lo[10];
+   char str_cl[10];
+
+   print_float(str_op, sizeof(str_op), stock_info.open, false);
+   print_float(str_hi, sizeof(str_hi), stock_info.high, false);
+   print_float(str_lo, sizeof(str_lo), stock_info.low, false);
+   print_float(str_cl, sizeof(str_cl), stock_info.close, false);
+
+   snprintf(str_value_info, sizeof(str_value_info),
+            "OP: %s\nHI: %s\nLO: %s\nCL: %s", str_op, str_hi, str_lo, str_cl);
    text_layer_set_text(text_value_diff, str_value_diff);
+   text_layer_set_text(text_value_info, str_value_info);
 }
 
 static void up_click_handler(ClickRecognizerRef recognizer, void *context)
@@ -115,12 +129,20 @@ static void window_load(Window *window)
    text_layer_set_text(text_value_diff, "-----");
    text_layer_set_text_alignment(text_value_diff, GTextAlignmentCenter);
 
+   //Stock value (at the bottom)
+   text_value_info = text_layer_create((GRect) {
+         .origin = { 8, 28 },
+         .size = { bounds.size.w-16, bounds.size.h-56 }
+   });
+   text_layer_set_text(text_value_info, text_info_default);
+
    background_workaround = text_layer_create(bounds);
 
    
    layer_add_child(window_layer, text_layer_get_layer(background_workaround));
    layer_add_child(window_layer, text_layer_get_layer(text_symbol));
    layer_add_child(window_layer, text_layer_get_layer(text_value_diff));
+   layer_add_child(window_layer, text_layer_get_layer(text_value_info));
    //layer_set_update_proc(window_layer, graph_draw);
 }
 
@@ -128,10 +150,12 @@ static void window_unload(Window *window)
 {
    text_layer_destroy(text_symbol);
    text_layer_destroy(text_value_diff);
+   text_layer_destroy(text_value_info);
    text_layer_destroy(background_workaround);
 
    text_symbol = NULL;
    text_value_diff = NULL;
+   text_value_info = NULL;
    background_workaround = NULL;
 }
 

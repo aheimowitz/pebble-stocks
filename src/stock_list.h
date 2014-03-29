@@ -6,6 +6,7 @@
 
 typedef struct {
    char symbols[MAX_SYMBOLS][SYMBOL_SIZE];
+   stock_t infos[MAX_SYMBOLS];
    int size;
 } stock_list_t;
 
@@ -16,5 +17,7 @@ int get_stock_list_size();
 int set_stock_list(char** symbols, int size);
 
 void delete_stock_list();
+
+void stock_list_refresh();
 
 #endif //STOCK_LIST_H
