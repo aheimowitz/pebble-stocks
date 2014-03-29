@@ -1,5 +1,6 @@
 #include "pebble.h"
 #include "stock_info.h"
+#include "stock_list.h"
 
 #define NUM_MENU_SECTIONS 1
 #define NUM_MENU_ITEMS 3
@@ -13,12 +14,13 @@ static MenuLayer *menu_layer;
 // You can draw arbitrary things in a menu item such as a background
 static GBitmap *menu_background;
 
+stock_list_t* stock_list;
 
 // Each section has a number of items;  we use a callback to specify this
 // You can also dynamically add and remove items using this
 //FIXME
 static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
-    return NUM_MENU_ITEMS;
+    return get_stock_list_size();
 }
 
 // A callback is used to specify the height of the section header
@@ -35,7 +37,15 @@ static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, ui
 
 // This is the menu item draw callback where you specify what each item should look like
 static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
-  menu_cell_basic_draw(ctx, cell_layer, "FB                  +3.00",NULL,NULL);
+  char* symbol_name = stock_list->symbols[cell_index->row];
+  char* difference_size = stock_list->
+  char str[256];
+  int total_size = symbol_name.size() + 
+  strcpy(str, symbol_name);
+  for(int x=0; x<(18;x++
+  strcat(str,"                  ");
+  strcat(str,"+3.00");
+  menu_cell_basic_draw(ctx, cell_layer, str,NULL,NULL);
 }
 
 // Here we capture when a user selects a menu item
@@ -88,7 +98,9 @@ int main(void) {
     .load = window_load,
     .unload = window_unload,
   });
-
+  char* symbols[] = {"FB","GOOG", "SIRI", "T"};
+  set_stock_list(symbols, 4);
+  stock_list = get_stock_list();
   window_stack_push(window, true /* Animated */);
 
   app_event_loop();
