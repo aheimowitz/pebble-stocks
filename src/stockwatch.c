@@ -42,8 +42,9 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 
   stock_info_init();
-  //Window *stock_info_window = stock_info_get_window();
-  //window_stack_push (stock_info_window, true); 
+  Window *stock_info_window = stock_info_get_window();
+  window_stack_push (stock_info_window, true); 
+  stock_info_set_symbol_index(cell_index->row);
 }
 
 // This initializes the menu upon window load
