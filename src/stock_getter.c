@@ -37,11 +37,11 @@ bool get_stock_info_multi(char* symbols, stock_t* infos, int num)
    int i;
    for(i=0;i<num;i++)
    {
-      infos[i]open = 60;
-      infos[i]close = 80;
-      infos[i]high = 90;
-      infos[i]low = 50;
-      infoes[i].valid = true;
+      infos[i].open = 60;
+      infos[i].close = 80;
+      infos[i].high = 90;
+      infos[i].low = 50;
+      infos[i].valid = true;
    }
 
    return true;

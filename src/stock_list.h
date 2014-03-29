@@ -4,6 +4,8 @@
 #define MAX_SYMBOLS 20
 #define SYMBOL_SIZE 5
 
+#include "stock_t.h"
+
 typedef struct {
    char symbols[MAX_SYMBOLS][SYMBOL_SIZE];
    stock_t infos[MAX_SYMBOLS];

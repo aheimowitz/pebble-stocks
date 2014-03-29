@@ -1,5 +1,6 @@
 #include <pebble.h>
 #include "stock_list.h"
+#include "stock_getter.h"
 
 #define KEY 0
 
@@ -34,7 +35,7 @@ int set_stock_list(char** symbols, int size)
 
    int i;
    for(i=0;i<size;i++)
-      strncpy(list.symbols+i*SYMBOL_SIZE, symbols[i], SYMBOL_SIZE);
+      strncpy(list.symbols[i], symbols[i], SYMBOL_SIZE);
 
    int count = persist_write_data(KEY, list.symbols, size*SYMBOL_SIZE);
 
@@ -51,5 +52,5 @@ void delete_stock_list()
 
 void stock_list_refresh()
 {
-   get_stock_info_multi(list.symbols, list.infos, list.size);
+   get_stock_info_multi(*list.symbols, list.infos, list.size);
 }
