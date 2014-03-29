@@ -1,6 +1,8 @@
+#include "util.h"
 #include "pebble.h"
 #include "stock_info.h"
 #include "stock_list.h"
+#include "stock_t.h"
 
 #define NUM_MENU_SECTIONS 1
 #define NUM_MENU_ITEMS 3
@@ -38,14 +40,20 @@ static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, ui
 // This is the menu item draw callback where you specify what each item should look like
 static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
   char* symbol_name = stock_list->symbols[cell_index->row];
-  char* difference_size = stock_list->
-  char str[256];
-  int total_size = symbol_name.size() + 
-  strcpy(str, symbol_name);
-  for(int x=0; x<(18;x++
-  strcat(str,"                  ");
-  strcat(str,"+3.00");
-  menu_cell_basic_draw(ctx, cell_layer, str,NULL,NULL);
+  float difference = stock_t_difference(&stock_list->infos[cell_index->row]);
+  float percent = stock_t_percent(&stock_list->infos[cell_index->row]);
+  char diff_string[25];
+  char percent_string[25];
+  char str[50];
+  print_float(diff_string, 128, difference, true);
+  print_float(percent_string, 128, percent, true);
+  int total_size = (strlen(symbol_name) + strlen(diff_string))/2;
+  snprintf(str, 256, "%s (%s%%)",diff_string,percent_string);
+  //for(int x=0; x<(20-total_size;x++){
+    //strcat(str," ");
+  //}
+  //strcat(str,diff_string);
+  menu_cell_basic_draw(ctx, cell_layer,symbol_name, str,NULL);
 }
 
 // Here we capture when a user selects a menu item
