@@ -11,4 +11,10 @@ typedef struct {
 
 stock_list_t* get_stock_list();
 
+int get_stock_list_size();
+
+int set_stock_list(char** symbols, int size);
+
+void delete_stock_list();
+
 #endif //STOCK_LIST_H
