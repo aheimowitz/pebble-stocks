@@ -9,6 +9,12 @@
 
 static Window *window;
 
+
+enum {
+    STOCK_NAME = 0x0
+};
+
+
 // This is a menu layer
 // You have more control than with a simple menu layer
 static MenuLayer *menu_layer;
@@ -88,6 +94,20 @@ void window_load(Window *window) {
   // Add it to the window for display
   layer_add_child(window_layer, menu_layer_get_layer(menu_layer));
 }
+
+
+void in_received_handler(DictionaryIterator *received, void *context) {
+    // incoming message received
+    Tuple *stocks_tuple = dict_find(received, STOCK_NAME);
+    //Tuple *passwd_tuple = dict_find(received, CONFIG_PASSWD);
+    if(stocks_tuple){
+        text_layer_set_text(text_layer, stocks_tuple->value->cstring);
+    }else{
+        text_layer_set_text(text_layer, "Enter stocks in your settings.");
+    }
+    
+}
+
 
 void window_unload(Window *window) {
   // Destroy the menu layer
