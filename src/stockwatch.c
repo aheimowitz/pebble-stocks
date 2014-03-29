@@ -1,4 +1,5 @@
 #include "pebble.h"
+#include "stock_info.h"
 
 #define NUM_MENU_SECTIONS 1
 #define NUM_MENU_ITEMS 3
@@ -40,6 +41,9 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 // Here we capture when a user selects a menu item
 void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 
+  stock_info_init();
+  //Window *stock_info_window = stock_info_get_window();
+  //window_stack_push (stock_info_window, true); 
 }
 
 // This initializes the menu upon window load
@@ -72,6 +76,7 @@ void window_unload(Window *window) {
 
   // And cleanup the background
   gbitmap_destroy(menu_background);
+  window_destroy(window);
 }
 
 int main(void) {
