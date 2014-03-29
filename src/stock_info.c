@@ -7,7 +7,6 @@
 
 //#define GRAPH_SIZE 20
 
-
 static Window *window;
 static TextLayer* text_stock_name;
 static TextLayer* text_stock_value;
@@ -61,6 +60,7 @@ static void update_text()
    snprintf(str_stock_value, sizeof(str_stock_value),
             "%+d.%02d (%+d.%02d%%)", int_pc, frc_pc, int_ab, frc_ab);
    text_layer_set_text(text_stock_value, str_stock_value);
+   text_layer_set_text(text_stock_value, "abc");
 }
 
 static void up_click_handler(ClickRecognizerRef recognizer, void *context)
@@ -68,6 +68,7 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context)
    //set_stock_value_str();
    stock_info_set_symbol_index(current_index-1);
 }
+
 static void down_click_handler(ClickRecognizerRef recognizer, void *context)
 {
    //set_stock_value_str();
@@ -94,7 +95,6 @@ static void window_load(Window *window)
    text_layer_set_text_alignment(text_stock_name, GTextAlignmentCenter);
    text_layer_set_background_color(text_stock_name, GColorBlack);
    text_layer_set_text_color(text_stock_name, GColorWhite);
-   //text_layer_set_font(text_stock_name, font_stock_name);
 
 
    //Stock value (at the bottom)
@@ -118,7 +118,7 @@ static void window_unload(Window *window)
 {
    text_layer_destroy(text_stock_name);
    text_layer_destroy(text_stock_value);
-   //gpath_destroy(graph);
+   text_layer_destroy(background_workaround);
 }
 
 /*Initialize the stock info page*/
@@ -141,13 +141,14 @@ void stock_info_init(void)
 
 
    stock_info.valid = false;
-   stock_info_update();
+   //stock_info_update();
 }
 
 /*Destroy the stock info page*/
 void stock_info_deinit(void)
 {
    window_destroy(window);
+   window = NULL;
 }
 
 /*Get the stock info page window*/
@@ -173,7 +174,7 @@ void stock_info_set_symbol_index(int index)
 }
 
 /*Updates the information for the current stock symbol*/
-void stock_info_update()
+void stock_info_update(void)
 {
    if (stock_info.valid)
    {
