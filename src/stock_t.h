@@ -8,6 +8,7 @@ typedef struct {
    float high;
    float low;
    float close;
+   float current;
    bool valid;
 } stock_t;
 

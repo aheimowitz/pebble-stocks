@@ -26,16 +26,12 @@ int get_stock_list_size()
    return persist_get_size(KEY)/SYMBOL_SIZE;
 }
 
-int set_stock_list(char** symbols, int size)
+int set_stock_list(char* symbols)
 {
    if (symbols == NULL)
       return 0;
-   if (size > MAX_SYMBOLS)
-      size = MAX_SYMBOLS;
 
-   int i;
-   for(i=0;i<size;i++)
-      strncpy(list.symbols[i], symbols[i], SYMBOL_SIZE);
+   int size = symbol_split(symbols, &list.symbols, MAX_SYMBOLS);
 
    int count = persist_write_data(KEY, list.symbols, size*SYMBOL_SIZE);
 

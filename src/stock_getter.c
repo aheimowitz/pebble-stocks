@@ -19,7 +19,7 @@ bool get_stock_info(char* symbol, stock_t* info)
    //For now, just return some default values
 
    info->open = 60;
-   info->close = 80;
+   info->current = 80;
    info->high = 90;
    info->low = 50;
    info->valid = true;
@@ -38,11 +38,23 @@ bool get_stock_info_multi(char* symbols, stock_t* infos, int num)
    for(i=0;i<num;i++)
    {
       infos[i].open = 60;
-      infos[i].close = 80;
+      infos[i].current = 80;
       infos[i].high = 90;
       infos[i].low = 50;
       infos[i].valid = true;
    }
 
+   return true;
+}
+bool get_stock_history(char* symbol, float* points, int num)
+{
+   if (!symbol || !points || num == 0)
+      return false;
+
+   int i;
+   for(i=0;i<num;i++)
+   {
+      points[i] = i*i;
+   }
    return true;
 }

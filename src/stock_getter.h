@@ -21,4 +21,6 @@ bool get_stock_info(char* symbol, stock_t* info);
   still be invalid (for example, if a stock symbol is invalid)*/
 bool get_stock_info_multi(char* symbols, stock_t* infos, int num);
 
+bool get_stock_history(char* symbol, float* points, int num);
+
 #endif //STOCK_GETTER_H
