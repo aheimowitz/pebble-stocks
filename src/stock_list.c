@@ -17,12 +17,7 @@ stock_list_t* get_stock_list()
 {
    if (list.size == -1)
    {
-      list.size = persist_get_size(KEY);
-      if (list.size == 0 ||
-          persist_read_data(0, list.symbols, list.size) == E_DOES_NOT_EXIST)
-            default_list();
-      else
-         list.size/=SYMBOL_SIZE;
+      default_list();
       stock_list_refresh();
    }
    return &list;
@@ -56,7 +51,7 @@ void delete_stock_list()
 
 void stock_list_refresh()
 {
-   get_stock_info_multi(list.symbols, list.infos, list.size);
+   get_stock_info_multi(list.symbols, list.infos, list.size, NULL);
 }
 
 char* stock_list_get_symbol(int index)

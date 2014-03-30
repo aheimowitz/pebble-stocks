@@ -263,26 +263,25 @@ void stock_info_set_symbol_index(int index)
    stock_info_update();
 }
 
+void callback(char* symbol, stock_t* info)
+{
+   update_text();
+}
+void hist_callback(char* symbol, stock_t* info)
+{
+   translate_graph();
+   graph.draw = true;
+}
+
 /*Updates the information for the current stock symbol*/
 void stock_info_update(void)
 {
    if (stock_info.valid)
    {
-      bool res = get_stock_info(str_symbol, &stock_info);
-      if (!res)
-      {
-         //Something bad happened
-         text_layer_set_text(ui.text_value_diff, "Error Occurred");
-         graph.draw = false;
-      }
-      else if (stock_info.valid)
-      {
-         //This is what we want
-         update_text();
-         get_stock_history(str_symbol, graph.values, GRAPH_SIZE);
-         translate_graph();
-         graph.draw = true;
-      }
+      bool res = get_stock_info(str_symbol, &stock_info, callback);
+      text_layer_set_text(ui.text_value_diff, "Loading");
+      text_layer_set_text(ui.text_value_info, text_info_default);
+      graph.draw = false;
       return;
    }
    //Something bad happened
