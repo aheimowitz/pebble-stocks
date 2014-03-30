@@ -50,6 +50,8 @@ static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, ui
 // This is the menu item draw callback where you specify what each item should look like
 static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
     char* symbol_name = stock_list_get_symbol(cell_index->row);
+    //float difference = 32.11;
+    //float percent = 12.11;
     float difference = stock_t_difference(stock_list_get_info(cell_index->row));
     float percent = stock_t_percent(stock_list_get_info(cell_index->row));
     char diff_string[25];
@@ -100,6 +102,7 @@ void window_load(Window *window) {
   layer_add_child(window_layer, menu_layer_get_layer(menu_layer));
 }
 
+
 void in_received_handler(DictionaryIterator *received, void *context) {
     // incoming message received
     Tuple *stocks_tuple = dict_find(received, STOCK_NAME);
@@ -110,6 +113,7 @@ void in_received_handler(DictionaryIterator *received, void *context) {
     }
     
 }
+
 
 void window_unload(Window *window) {
   // Destroy the menu layer
@@ -130,7 +134,6 @@ int main(void) {
     .unload = window_unload,
   });
   window_stack_push(window, true );
-  
   app_event_loop();
 
   window_destroy(window);

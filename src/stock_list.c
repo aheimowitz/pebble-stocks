@@ -10,8 +10,7 @@ static stock_t invalid_info = {.open = -1, .high = -1, .low = -1, .close = -1, .
 
 static void default_list()
 {
-   list.size = 1;
-   strcpy(list.symbols, "FB");
+   set_stock_list("FB,T");
 }
 
 stock_list_t* get_stock_list()

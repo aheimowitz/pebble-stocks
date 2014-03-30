@@ -8,7 +8,7 @@
 
 typedef struct {
    char* symbols;
-   stock_t* infos;
+   stock_t infos[MAX_SYMBOLS];
    int size;
 } stock_list_t;
 
