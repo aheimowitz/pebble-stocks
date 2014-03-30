@@ -6,16 +6,22 @@
 
 static stock_list_t list = {.size = 0};
 
+static void default_list()
+{
+   list.size = 1;
+   strcpy(list.symbols[0], "FB");
+}
+
 stock_list_t* get_stock_list()
 {
    if (list.size == 0)
    {
       list.size = persist_get_size(KEY);
-      if (list.size == 0)
-         return &list;
-      if (persist_read_data(0, list.symbols, list.size) == E_DOES_NOT_EXIST)
-         return &list;
-      list.size/=SYMBOL_SIZE;
+      if (list.size == 0 ||
+          persist_read_data(0, list.symbols, list.size) == E_DOES_NOT_EXIST)
+            default_list();
+      else
+         list.size/=SYMBOL_SIZE;
       stock_list_refresh();
    }
    return &list;
