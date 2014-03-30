@@ -253,7 +253,7 @@ void stock_info_set_symbol_index(int index)
       index = list->size-1;
    else if (index >= list->size)
       index = 0;
-   char* symbol_name = list->symbols[index];
+   char* symbol_name = stock_list_get_symbol(index);
    current_index = index;
    
 

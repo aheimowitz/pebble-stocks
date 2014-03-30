@@ -32,7 +32,7 @@ stock_list_t* stock_list;
 // Each section has a number of items;  we use a callback to specify this
 // You can also dynamically add and remove items using this
 static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
-    return get_stock_list_size();
+    return stock_list_get_size();
 }
 
 // A callback is used to specify the height of the section header
@@ -49,9 +49,9 @@ static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, ui
 
 // This is the menu item draw callback where you specify what each item should look like
 static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
-    char* symbol_name = stock_list->symbols[cell_index->row];
-    float difference = stock_t_difference(&stock_list->infos[cell_index->row]);
-    float percent = stock_t_percent(&stock_list->infos[cell_index->row]);
+    char* symbol_name = stock_list_get_symbol(cell_index->row);
+    float difference = stock_t_difference(stock_list_get_info(cell_index->row));
+    float percent = stock_t_percent(stock_list_get_info(cell_index->row));
     char diff_string[25];
     char percent_string[25];
     char str[50];
@@ -129,7 +129,6 @@ int main(void) {
     .load = window_load,
     .unload = window_unload,
   });
-  stock_list = get_stock_list();
   window_stack_push(window, true );
   
   app_event_loop();
