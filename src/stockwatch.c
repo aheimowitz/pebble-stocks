@@ -5,10 +5,15 @@
 #include "stock_t.h"
 
 #define NUM_MENU_SECTIONS 1
-#define NUM_MENU_ITEMS 3
 
 static Window *window;
 
+static struct stock_info_ui {
+   Window* window;
+   TextLayer* text_symbol;
+   TextLayer* text_value_diff;
+   TextLayer* text_value_info;
+} ui;
 
 enum {
     STOCK_NAME = 0x0
@@ -26,7 +31,6 @@ stock_list_t* stock_list;
 
 // Each section has a number of items;  we use a callback to specify this
 // You can also dynamically add and remove items using this
-//FIXME
 static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
     return get_stock_list_size();
 }
@@ -53,7 +57,6 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
   char str[50];
   print_float(diff_string, 128, difference, true);
   print_float(percent_string, 128, percent, true);
-  int total_size = (strlen(symbol_name) + strlen(diff_string))/2;
   snprintf(str, 256, "%s (%s%%)",diff_string,percent_string);
   //for(int x=0; x<(20-total_size;x++){
     //strcat(str," ");
@@ -79,6 +82,12 @@ void window_load(Window *window) {
   // Create the menu layer
   menu_layer = menu_layer_create(bounds);
 
+  ui.text_symbol = text_layer_create((GRect) {
+         .origin = { 8, 8 },
+         .size = { bounds.size.w-16, 20 }
+   });
+   text_layer_set_text(ui.text_symbol, "No Stocks");
+
   // Set all the callbacks for the menu layer
   menu_layer_set_callbacks(menu_layer, NULL, (MenuLayerCallbacks){
     .get_num_rows = menu_get_num_rows_callback,
@@ -101,9 +110,8 @@ void in_received_handler(DictionaryIterator *received, void *context) {
     Tuple *stocks_tuple = dict_find(received, STOCK_NAME);
     //Tuple *passwd_tuple = dict_find(received, CONFIG_PASSWD);
     if(stocks_tuple){
-        text_layer_set_text(text_layer, stocks_tuple->value->cstring);
-    }else{
-        text_layer_set_text(text_layer, "Enter stocks in your settings.");
+        text_layer_set_text(ui.text_symbol, "");
+        set_stock_list(stocks_tuple->value->cstring);
     }
     
 }
@@ -126,8 +134,6 @@ int main(void) {
     .load = window_load,
     .unload = window_unload,
   });
-  char* symbols[] = {"FB","GOOG", "SIRI", "T"};
-  set_stock_list(symbols, 4);
   stock_list = get_stock_list();
   window_stack_push(window, true /* Animated */);
 
