@@ -106,10 +106,33 @@ void in_received_handler(DictionaryIterator *received, void *context) {
     // incoming message received
     Tuple *stocks_tuple = dict_find(received, STOCK_NAME);
     //Tuple *passwd_tuple = dict_find(received, CONFIG_PASSWD);
-    if(stocks_tuple){
-        //text_layer_set_text(ui.text_symbol, "");
-        set_stock_list(stocks_tuple->value->cstring);
-    }
+    //text_layer_set_text(ui.text_symbol, "");
+    set_stock_list(stocks_tuple->value->cstring);
+    menu_layer_destroy(menu_layer);
+    Layer *window_layer = window_get_root_layer(window);
+  GRect bounds = layer_get_frame(window_layer);
+    menu_layer = menu_layer_create(bounds);
+/*
+  ui.text_symbol = text_layer_create((GRect) {
+         .origin = { 8, 8 },
+         .size = { bounds.size.w-16, 20 }
+   });
+   text_layer_set_text(ui.text_symbol, "No Stocks");
+*/
+  // Set all the callbacks for the menu layer
+  menu_layer_set_callbacks(menu_layer, NULL, (MenuLayerCallbacks){
+    .get_num_rows = menu_get_num_rows_callback,
+    .get_header_height = menu_get_header_height_callback,
+    .draw_header = menu_draw_header_callback,
+    .draw_row = menu_draw_row_callback,
+    .select_click = menu_select_callback,
+  });
+
+  // Bind the menu layer's click config provider to the window for interactivity
+  menu_layer_set_click_config_onto_window(menu_layer, window);
+
+  // Add it to the window for display
+  layer_add_child(window_layer, menu_layer_get_layer(menu_layer));
     
 }
 
@@ -124,6 +147,10 @@ void window_unload(Window *window) {
 
 int main(void) {
   stock_info_init();
+  app_message_register_inbox_received(in_received_handler);
+     const uint32_t inbound_size = 64;
+   const uint32_t outbound_size = 64;
+   app_message_open(inbound_size, outbound_size);
   
   window = window_create();
 
@@ -133,8 +160,6 @@ int main(void) {
     .unload = window_unload,
   });
   window_stack_push(window, true );
-
-  set_stock_list("FB,T,GOOG");
 
 
   app_event_loop();
