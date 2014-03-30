@@ -19,7 +19,7 @@ stock_list_t* get_stock_list()
       list.size = persist_get_size(KEY);
       if (list.size == 0 ||
           persist_read_data(0, list.symbols, list.size) == E_DOES_NOT_EXIST)
-            default_list();
+            set_stock_list("FB,T,GOOG");
       else
          list.size/=SYMBOL_SIZE;
       stock_list_refresh();
