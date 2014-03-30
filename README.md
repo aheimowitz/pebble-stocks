@@ -8,3 +8,7 @@ This app is designed to work on its own without a companion app (except for the 
 Team
 ====
 Adam Heimowitz
+Kevin
+Brandon
+Jerry/Jeremy
+Mohammed 
