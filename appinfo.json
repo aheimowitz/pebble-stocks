@@ -1,7 +1,7 @@
 {
-  "uuid": "c8df6bd3-893f-4af2-95fa-11731d1c4f80",
-  "shortName": "stockwatch",
-  "longName": "stockwatch",
+  "uuid": "eb6ec1dc-c47b-4c11-b432-599a22cd5af9",
+  "shortName": "helloTest",
+  "longName": "helloTest",
   "companyName": "MakeAwesomeHappen",
   "versionCode": 1,
   "versionLabel": "1.0.0",
@@ -9,15 +9,10 @@
     "watchface": false
   },
   "appKeys": {
-    "dummy": 0
+    "name": 0
   },
   "resources": {
-    "media": [
-      {
-        "type": "font",
-        "name": "FONT_ROBOTO_BOLD_20",
-        "file": "fonts/ROBOTO_BOLD_20.ttf"
-      }
-    ]
-  }
+    "media": []
+  },
+  "capabilities": [ "configurable" ]
 }
