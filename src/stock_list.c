@@ -31,7 +31,7 @@ int set_stock_list(char* symbols)
    if (symbols == NULL)
       return 0;
 
-   int size = symbol_split(symbols, &list.symbols, MAX_SYMBOLS);
+   int size = symbol_split(symbols, (char*)list.symbols, MAX_SYMBOLS);
 
    int count = persist_write_data(KEY, list.symbols, size*SYMBOL_SIZE);
 
