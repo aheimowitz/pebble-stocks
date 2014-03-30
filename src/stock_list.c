@@ -12,9 +12,9 @@ stock_list_t* get_stock_list()
    {
       list.size = persist_get_size(KEY);
       if (list.size == 0)
-         return NULL;
+         return &list;
       if (persist_read_data(0, list.symbols, list.size) == E_DOES_NOT_EXIST)
-         return NULL;
+         return &list;
       list.size/=SYMBOL_SIZE;
       stock_list_refresh();
    }
@@ -31,7 +31,7 @@ int set_stock_list(char* symbols)
    if (symbols == NULL)
       return 0;
 
-   int size = symbol_split(symbols, &list.symbols, MAX_SYMBOLS);
+   int size = symbol_split(symbols, (char*)list.symbols, MAX_SYMBOLS);
 
    int count = persist_write_data(KEY, list.symbols, size*SYMBOL_SIZE);
 
