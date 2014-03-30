@@ -66,7 +66,6 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 // Here we capture when a user selects a menu item
 void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 
-  stock_info_init();
   Window *stock_info_window = stock_info_get_window();
   window_stack_push (stock_info_window, true); 
   stock_info_set_symbol_index(cell_index->row);
@@ -121,10 +120,10 @@ void window_unload(Window *window) {
 
   // And cleanup the background
   gbitmap_destroy(menu_background);
-  window_destroy(window);
 }
 
 int main(void) {
+  stock_info_init();
   
   window = window_create();
 
@@ -134,7 +133,12 @@ int main(void) {
     .unload = window_unload,
   });
   window_stack_push(window, true );
+
+  set_stock_list("FB,T,GOOG");
+
+
   app_event_loop();
 
   window_destroy(window);
+  stock_info_deinit();
 }

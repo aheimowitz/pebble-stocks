@@ -7,7 +7,7 @@
 #include "stock_t.h"
 
 typedef struct {
-   char* symbols;
+   char symbols[MAX_SYMBOLS*SYMBOL_SIZE];
    stock_t infos[MAX_SYMBOLS];
    int size;
 } stock_list_t;

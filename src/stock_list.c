@@ -30,7 +30,8 @@ stock_list_t* get_stock_list()
 
 int stock_list_get_size()
 {
-   return persist_get_size(KEY)/SYMBOL_SIZE;
+   get_stock_list();
+   return list.size;//persist_get_size(KEY)/SYMBOL_SIZE;
 }
 
 int set_stock_list(char* symbols)
