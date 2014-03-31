@@ -5,10 +5,12 @@ This is a pebble project designed at hack princeton. It uses the Tradier API to 
 
 This app is designed to work on its own without a companion app (except for the officia pebble app for internet access)
 
+Unfortunately we were unable to finish this app completly by the end of hack princeton, however we will continue to work on it and hope to have it finished for use soon!
+
 Team
 ====
-Adam Heimowitz
-Kevin
-Brandon
-Jerry/Jeremy
-Mohammed 
+Adam Heimowitz \n
+Kevin Johnson\n
+Brandon \n
+Jerry/Jeremy \n
+Mohammed \n
