@@ -9,8 +9,8 @@ Unfortunately we were unable to finish this app completly by the end of hack pri
 
 Team
 ====
-Adam Heimowitz \n
-Kevin Johnson\n
-Brandon \n
-Jerry/Jeremy \n
-Mohammed \n
+Adam Heimowitz 
+Kevin Johnson
+Brandon 
+Jerry/Jeremy 
+Mohammed 
