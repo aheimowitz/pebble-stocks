@@ -8,13 +8,6 @@
 
 static Window *window;
 
-static struct stock_info_ui {
-   Window* window;
-   TextLayer* text_symbol;
-   TextLayer* text_value_diff;
-   TextLayer* text_value_info;
-} ui;
-
 enum {
     STOCK_NAME = 0x0
 };
@@ -65,10 +58,7 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 
 // Here we capture when a user selects a menu item
 void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
-
-  Window *stock_info_window = stock_info_get_window();
-  window_stack_push (stock_info_window, true); 
-  stock_info_set_symbol_index(cell_index->row);
+  page_stock_info_show(cell_index->row);
 }
 
 // This initializes the menu upon window load
@@ -146,7 +136,7 @@ void window_unload(Window *window) {
 }
 
 int main(void) {
-  stock_info_init();
+  page_stock_info_init();
   app_message_register_inbox_received(in_received_handler);
      const uint32_t inbound_size = 64;
    const uint32_t outbound_size = 64;
@@ -165,5 +155,5 @@ int main(void) {
   app_event_loop();
 
   window_destroy(window);
-  stock_info_deinit();
+  page_stock_info_deinit();
 }

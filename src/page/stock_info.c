@@ -1,31 +1,39 @@
 #include <pebble.h>
-//#include <pebble_fonts.h>
 #include "stock_info.h"
 #include "stock_getter.h"
 #include "stock_list.h"
 #include "util.h"
 
-//144 x 168
-
 #define GRAPH_SIZE 8
 
+/*
+ * Static Variables
+ */
+
+//Default text to display for stock info
 static char* text_info_default =  "OP: ------    HI: ------ \nCL: ------    LO: ------";
 
-static struct stock_info_ui {
+//Struct containing UI elements
+static struct {
    Window* window;
    TextLayer* text_symbol;
    TextLayer* text_value_diff;
    TextLayer* text_value_info;
+   TextLayer* background_workaround;
 } ui;
+
+//Strings for each text layer
 static char str_symbol[20];
 static char str_value_diff[20];
 static char str_value_info[80];
+
+//Current symbol index
 static int current_index;
 
-static TextLayer* background_workaround;
-
+//Stock info to store data
 static stock_t stock_info;
 
+//Struct containing graph info
 static struct {
    float values[GRAPH_SIZE];
    GPoint points[GRAPH_SIZE];
@@ -34,7 +42,96 @@ static struct {
    bool draw;
 } graph;
 
-//static GFont font_stock_name;
+/*
+ * Static Function Prototypes
+ */
+
+static void translate_graph();
+static void translate_point(GPoint* point);
+static void graph_draw(struct Layer* layer, GContext* ctx);
+static void update_text();
+static void up_click_handler(ClickRecognizerRef recognizer, void *context);
+static void down_click_handler(ClickRecognizerRef recognizer, void *context);
+static void click_config_provider(void *context);
+static void window_load(Window *window);
+static void window_unload(Window *window);
+static void callback(char* symbol, stock_t* info);
+static void hist_callback(char* symbol, stock_t* info);
+
+/*
+ * API Function Definitions
+ */
+
+/*Initialize the stock info page*/
+void page_stock_info_init(void)
+{
+   //Create window
+   ui.window = window_create();
+
+   window_set_click_config_provider(ui.window, click_config_provider);
+   window_set_window_handlers(ui.window, (WindowHandlers) {
+      .load = window_load,
+      .unload = window_unload
+   });
+
+   stock_info.valid = false;
+}
+
+/*Destroy the stock info page*/
+void page_stock_info_deinit(void)
+{
+   window_destroy(ui.window);
+   ui.window = NULL;
+}
+
+/*Show the stock info page window*/
+void page_stock_info_show(int index)
+{
+  window_stack_push (ui.window, true); 
+  page_stock_info_set_symbol_index(index);
+}
+
+/*Sets the symbol for the stock page*/
+void page_stock_info_set_symbol_index(int index)
+{
+   stock_list_t* list = get_stock_list();
+   if (list == NULL)
+      return;
+   if (index < 0)
+      index = list->size-1;
+   else if (index >= list->size)
+      index = 0;
+   char* symbol_name = stock_list_get_symbol(index);
+   current_index = index;
+   
+
+   strncpy(str_symbol, symbol_name, SYMBOL_SIZE);
+   text_layer_set_text(ui.text_symbol, str_symbol);
+   stock_info.valid = true;
+   page_stock_info_update();
+}
+
+
+/*Updates the information for the current stock symbol*/
+void page_stock_info_update(void)
+{
+   if (stock_info.valid)
+   {
+      get_stock_info(str_symbol, &stock_info, callback);
+      text_layer_set_text(ui.text_value_diff, "Loading");
+      text_layer_set_text(ui.text_value_info, text_info_default);
+      graph.draw = false;
+      return;
+   }
+   //Something bad happened
+   text_layer_set_text(ui.text_value_diff, "Invalid Symbol");
+   graph.draw = false;
+}
+
+/*
+ * Static Function Definitions
+ */
+
 
 static void translate_graph()
 {
@@ -140,12 +237,12 @@ static void update_text()
 
 static void up_click_handler(ClickRecognizerRef recognizer, void *context)
 {
-   stock_info_set_symbol_index(current_index-1);
+   page_stock_info_set_symbol_index(current_index-1);
 }
 
 static void down_click_handler(ClickRecognizerRef recognizer, void *context)
 {
-   stock_info_set_symbol_index(current_index+1);
+   page_stock_info_set_symbol_index(current_index+1);
 }
 
 static void click_config_provider(void *context)
@@ -187,7 +284,7 @@ static void window_load(Window *window)
    text_layer_set_text_alignment(ui.text_value_diff, GTextAlignmentCenter);
    text_layer_set_font(ui.text_value_diff, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
 
-   background_workaround = text_layer_create(bounds);
+   ui.background_workaround = text_layer_create(bounds);
 
    graph.bounds = (GRect) {
       .origin = { 8, 30 },
@@ -195,96 +292,34 @@ static void window_load(Window *window)
    };
 
    
-   layer_add_child(window_layer, text_layer_get_layer(background_workaround));
+   layer_add_child(window_layer, text_layer_get_layer(ui.background_workaround));
    layer_add_child(window_layer, text_layer_get_layer(ui.text_symbol));
    layer_add_child(window_layer, text_layer_get_layer(ui.text_value_diff));
    layer_add_child(window_layer, text_layer_get_layer(ui.text_value_info));
-   layer_set_update_proc(text_layer_get_layer(background_workaround), graph_draw);
+   layer_set_update_proc(text_layer_get_layer(ui.background_workaround), graph_draw);
 }
 
 static void window_unload(Window *window)
 {
+   //Destroy all UI elements
    text_layer_destroy(ui.text_symbol);
    text_layer_destroy(ui.text_value_diff);
    text_layer_destroy(ui.text_value_info);
-   text_layer_destroy(background_workaround);
+   text_layer_destroy(ui.background_workaround);
 
-   ui.text_symbol = NULL;
-   ui.text_value_diff = NULL;
-   ui.text_value_info = NULL;
-   background_workaround = NULL;
+   //Set to NULL (just in case)
+   ui.text_symbol             = NULL;
+   ui.text_value_diff         = NULL;
+   ui.text_value_info         = NULL;
+   ui.background_workaround   = NULL;
 }
 
-/*Initialize the stock info page*/
-void stock_info_init(void)
-{
-   //Create window
-   ui.window = window_create();
-   window_set_click_config_provider(ui.window, click_config_provider);
-   window_set_window_handlers(ui.window, (WindowHandlers) {
-      .load = window_load,
-      .unload = window_unload,
-   });
-
-   stock_info.valid = false;
-   //stock_info_update();
-}
-
-/*Destroy the stock info page*/
-void stock_info_deinit(void)
-{
-   window_destroy(ui.window);
-   ui.window = NULL;
-}
-
-/*Get the stock info page window*/
-Window* stock_info_get_window(void)
-{
-   return ui.window;
-}
-
-/*Sets the symbol for the stock page*/
-void stock_info_set_symbol_index(int index)
-{
-   stock_list_t* list = get_stock_list();
-   if (list == NULL)
-      return;
-   if (index < 0)
-      index = list->size-1;
-   else if (index >= list->size)
-      index = 0;
-   char* symbol_name = stock_list_get_symbol(index);
-   current_index = index;
-   
-
-   strncpy(str_symbol, symbol_name, SYMBOL_SIZE);
-   text_layer_set_text(ui.text_symbol, str_symbol);
-   stock_info.valid = true;
-   stock_info_update();
-}
-
-void callback(char* symbol, stock_t* info)
+static void callback(char* symbol, stock_t* info)
 {
    update_text();
 }
-void hist_callback(char* symbol, stock_t* info)
+static void hist_callback(char* symbol, stock_t* info)
 {
    translate_graph();
    graph.draw = true;
-}
-
-/*Updates the information for the current stock symbol*/
-void stock_info_update(void)
-{
-   if (stock_info.valid)
-   {
-      bool res = get_stock_info(str_symbol, &stock_info, callback);
-      text_layer_set_text(ui.text_value_diff, "Loading");
-      text_layer_set_text(ui.text_value_info, text_info_default);
-      graph.draw = false;
-      return;
-   }
-   //Something bad happened
-   text_layer_set_text(ui.text_value_diff, "Invalid Symbol");
-   graph.draw = false;
 }
