@@ -1,5 +1,7 @@
 #include "util.h"
 
+/*Prints a float to a character buffer.
+  If sign is true a '+' is printed before a positive number*/
 void print_float(char* buffer, int size, float number, bool sign)
 {
    int dec = (int)(number*100);
@@ -13,23 +15,26 @@ void print_float(char* buffer, int size, float number, bool sign)
       snprintf(buffer, size, "%d.%02d", int_part, frc_part);
 }
 
-int symbol_split(char* symbols, char* dest, int max)
+/*Returns a pointer to the first occurrence of c in str*/
+/*char* strchr(char* str, char c)
 {
-   char* head = symbols;
-   char* tail = symbols;
-
-   int i = 0;
-   while(1)
+   while(str)
    {
-      if (*tail == 0 || *tail == ',')
-      {
-         strncpy(dest+i*SYMBOL_SIZE, head, (tail-head));
-         head = tail+1;
-         i++;
-         if (i == max || *tail == 0)
-            break; 
-      }
-      tail++;
+      if (*str == c)
+         return str;
+      str++;
    }
-   return i;
+   return NULL;
+}*/
+
+/*Returns a pointer to the first occurrence of any character in cs in str*/
+char* strchrs(char* str, char* cs)
+{
+   while(str)
+   {
+      if (strchr(cs, *str))
+         return str;
+      str++;
+   }
+   return NULL;
 }

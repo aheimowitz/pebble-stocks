@@ -135,15 +135,16 @@ bool send(char* symbol)
    return true;
 }
 
-static void separate_symbols(char* symbols, char* dest, int count, int size)
+static void separate_symbols(char** symbols, char* dest,
+                             int separator, int count, int size)
 {
    char* next = dest;
-   int n = snprintf(next, size, "%s", symbols);
+   int n = snprintf(next, size, "%s", symbols[0]);
    next+=n;
    int i;
    for(i=1;i<count;i++)
    {
-      n = snprintf(next, size-(next-dest), ",%s", symbols+i*SYMBOL_SIZE);
+      n = snprintf(next, size-(next-dest), "%c%s", separator, symbols[i]);
       next+=n;
    }
 }
@@ -153,10 +154,6 @@ bool get_stock_info(char* symbol, stock_t* info, request_callback cb)
    if (!info || !symbol)
       return false;
 
-   //TODO: Implement
-
-   //For now, just return some default values
-
    infos = info;
    info_count = 1;
    current = 0;
@@ -164,26 +161,29 @@ bool get_stock_info(char* symbol, stock_t* info, request_callback cb)
 
    send(symbol);
 
+   /*
    info->open = 60;
    info->current = 80;
    info->high = 90;
    info->low = 50;
    info->valid = true;
+   */
 
    return true;
 }
-bool get_stock_info_multi(char* symbols, stock_t* infos, int num, request_callback cb)
+bool get_stock_info_multi(char** symbols, stock_t* quotes,
+                          int count, request_callback cb)
 {
    if (!infos || !symbols)
       return false;
-   if (num == 0)
+   if (count == 0)
       return true;
 
    char buffer[200];
-   separate_symbols(symbols, buffer, num, sizeof(buffer));
+   separate_symbols(symbols, buffer, ',', count, sizeof(buffer));
 
    infos = infos;
-   info_count = num;
+   info_count = count;
    current = 0;
    current_cb = cb;
 
@@ -191,7 +191,7 @@ bool get_stock_info_multi(char* symbols, stock_t* infos, int num, request_callba
 
    //TODO: Implement
    int i;
-   for(i=0;i<num;i++)
+   for(i=0;i<count;i++)
    {
       infos[i].open = 60;
       infos[i].current = 80;

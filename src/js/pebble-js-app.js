@@ -16,29 +16,36 @@ Pebble.addEventListener("webviewclosed",
   }
 );
 
-var token = "YZtE5zbjX7GGBgDMJvVzo0vhTfnt";
-
 function sendStuff(quote)
 {
-   var msg = {}
-   msg[0] = JSON.stringify(quote.symbol);
-   msg[1] = JSON.stringify(quote.open);
-   msg[2] = JSON.stringify(quote.high);
-   msg[3] = JSON.stringify(quote.low);
-   msg[4] = JSON.stringify(quote.close);
-   msg[5] = JSON.stringify(quote.last);
-   console.log("Sending info! " + JSON.stringify(msg));
-   Pebble.sendAppMessage(msg);
+   if (quote.Open)
+   {
+      console.log("Sending:")
+      for (var i in quote)
+         console.log(i + " = " + quote[i]);
+      Pebble.sendAppMessage(msg);
+   }
+   else
+      console.log("Invalid quote to send! " + quote.symbol);
 }
 
 // Fetch stock data for a given stock symbol
-function fetchStockQuote(symbol, isInitMsg)
+function fetchStockQuote(symbol)
 {
+   if (symbol.length == 0)
+   {
+      console.log("No symbols provided!")
+      return;
+   }
+   var symbollist = "\"" + symbol.split(",").join("\",\"") + "\"";
+   console.log("fetching data for symbols: " + symbollist);
    var response;
    var req = new XMLHttpRequest();
-   console.log("I did a thing!");
+
+   var values = ["Open", "Ask", "Change", "PercentChange"];
+   //var values = ["*"];
    // build the GET request
-   req.open('GET', "https://api.tradier.com/v1/markets/quotes?symbols=" + symbol, true);
+   req.open('GET', "http://query.yahooapis.com/v1/public/yql?q=select " + values.join() + " from yahoo.finance.quotes where symbol in (" + symbollist + ")%0A%09%09&env=http%3A%2F%2Fdatatables.org%2Falltables.env&format=json", true);
    req.onload = function(e) {
       if (req.readyState == 4)
       {
@@ -47,26 +54,26 @@ function fetchStockQuote(symbol, isInitMsg)
          {
             console.log(req.responseText);
             response = JSON.parse(req.responseText);
-            if (response.quotes)
+            var results = response.query.results
+            if (results)
             {
-               console.log("Quotes!");
-               var q = response.quotes.quote;
-               if (q instanceof Array)
+               var quotes = results.quote;
+               if (quotes instanceof Array)
                {
-                  var len = q.length;
+                  var len = quotes.length;
                   for(var i=0;i<len;i++)
-                     sendStuff(q);
+                     sendStuff(quotes[i]);
                }
                else
-                  sendStuff(q);
+                  sendStuff(quotes);
             }
+            else
+               console.log("Invalid stuff to send! " + symbol);
          }
          else
             console.log("Request returned error code " + req.status.toString());
       }
    };
-   req.setRequestHeader("Authorization", "Bearer " + token);
-   req.setRequestHeader("Accept", "application/json")
    req.send(null);
 }
 

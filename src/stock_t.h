@@ -4,6 +4,7 @@
 #include <pebble.h>
 
 typedef struct {
+   char* symbol;
    float open;
    float high;
    float low;

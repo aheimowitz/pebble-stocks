@@ -7,6 +7,23 @@
 #define GRAPH_SIZE 8
 
 /*
+ * Static Function Prototypes
+ */
+
+static void translate_graph(void);
+static void translate_point(GPoint* point);
+static void graph_draw(struct Layer* layer, GContext* ctx);
+static void update_text(void);
+static void up_click_handler(ClickRecognizerRef recognizer, void *context);
+static void down_click_handler(ClickRecognizerRef recognizer, void *context);
+static void click_config_provider(void *context);
+static void window_load(Window *window);
+static void window_unload(Window *window);
+static void callback(char* symbol, stock_t* info);
+static void hist_callback(char* symbol, stock_t* info);
+
+
+/*
  * Static Variables
  */
 
@@ -42,21 +59,6 @@ static struct {
    bool draw;
 } graph;
 
-/*
- * Static Function Prototypes
- */
-
-static void translate_graph();
-static void translate_point(GPoint* point);
-static void graph_draw(struct Layer* layer, GContext* ctx);
-static void update_text();
-static void up_click_handler(ClickRecognizerRef recognizer, void *context);
-static void down_click_handler(ClickRecognizerRef recognizer, void *context);
-static void click_config_provider(void *context);
-static void window_load(Window *window);
-static void window_unload(Window *window);
-static void callback(char* symbol, stock_t* info);
-static void hist_callback(char* symbol, stock_t* info);
 
 /*
  * API Function Definitions
@@ -94,12 +96,10 @@ void page_stock_info_show(int index)
 /*Sets the symbol for the stock page*/
 void page_stock_info_set_symbol_index(int index)
 {
-   stock_list_t* list = get_stock_list();
-   if (list == NULL)
-      return;
+   int size = stock_list_get_size();
    if (index < 0)
-      index = list->size-1;
-   else if (index >= list->size)
+      index = size-1;
+   else if (index >= size)
       index = 0;
    char* symbol_name = stock_list_get_symbol(index);
    current_index = index;
@@ -133,7 +133,7 @@ void page_stock_info_update(void)
  */
 
 
-static void translate_graph()
+static void translate_graph(void)
 {
    int i;
    graph.maxy = graph.values[0];
@@ -205,7 +205,7 @@ static void graph_draw(struct Layer* layer, GContext* ctx)
       GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
 }
 
-static void update_text()
+static void update_text(void)
 {
    float percent = stock_t_percent(&stock_info);
    float difference = stock_t_difference(&stock_info);

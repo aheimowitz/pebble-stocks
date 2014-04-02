@@ -45,8 +45,10 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
     char* symbol_name = stock_list_get_symbol(cell_index->row);
     //float difference = 32.11;
     //float percent = 12.11;
-    float difference = stock_t_difference(stock_list_get_info(cell_index->row));
-    float percent = stock_t_percent(stock_list_get_info(cell_index->row));
+    stock_t* quote = stock_list_get_quote(cell_index->row);
+    float difference = stock_t_difference(quote);
+    float percent = stock_t_percent(quote);
+
     char diff_string[25];
     char percent_string[25];
     char str[50];
@@ -97,7 +99,7 @@ void in_received_handler(DictionaryIterator *received, void *context) {
     Tuple *stocks_tuple = dict_find(received, STOCK_NAME);
     //Tuple *passwd_tuple = dict_find(received, CONFIG_PASSWD);
     //text_layer_set_text(ui.text_symbol, "");
-    set_stock_list(stocks_tuple->value->cstring);
+    stock_list_set_symbols(stocks_tuple->value->cstring);
     menu_layer_destroy(menu_layer);
     Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_frame(window_layer);
